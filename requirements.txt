@@ -1,0 +1,2 @@
+pynest-api==0.2.2
+asyncpg==0.29.0
