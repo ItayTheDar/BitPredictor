@@ -3,6 +3,7 @@ from sqlalchemy import Integer, String, ForeignKey, DateTime, Float
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from datetime import datetime
 
+
 class Coin(config.Base):
     __tablename__ = "coins"
 
@@ -12,6 +13,7 @@ class Coin(config.Base):
 
     price_history = relationship("PriceHistory", back_populates="coin")
     market_cap = relationship("MarketCap", back_populates="coin")
+
 
 class PriceHistory(config.Base):
     __tablename__ = "price_history"
@@ -27,6 +29,7 @@ class PriceHistory(config.Base):
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.now)
 
     coin = relationship("Coin", back_populates="price_history")  # Corrected relationship attribute
+
 
 class MarketCap(config.Base):
     __tablename__ = "market_cap"

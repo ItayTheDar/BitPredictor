@@ -34,7 +34,7 @@ class CoinController:
     async def delete_coin(self, coin_id: int):
         return await self.service.delete_coin(coin_id)
 
-    @Get("/get_coin_by_id/{coin_id}")
+    @Get("/{coin_id}")
     async def get_coin_by_id(self, coin_id: int):
         return await self.service.get_coin_by_id(coin_id)
 

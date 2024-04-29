@@ -16,7 +16,6 @@ class Coin(BaseModel):
 
 
 class PriceHistory(BaseModel):
-    id: Optional[int] = Field(..., example=1, description="Record ID")
     coin_id: int = Field(..., example=1, description="Coin ID")
     date: datetime = Field(..., example="2021-01-01", description="Date")
     price: float = Field(..., example=1000.0, description="Price")
@@ -41,7 +40,6 @@ class PriceHistory(BaseModel):
 
 
 class MarketCap(BaseModel):
-    id: Optional[int] = Field(..., example=1, description="Record ID")
     coin_id: int = Field(..., example=1, description="Coin ID")
     date: datetime = Field(..., example="2021-01-01", description="Date")
     market_cap: float = Field(..., example=1000.0, description="Market Cap")

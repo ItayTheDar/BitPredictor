@@ -2,9 +2,10 @@ from nest.core import PyNestFactory, Module
 from src.config import config
 from src.app_controller import AppController
 from src.app_service import AppService
+from src.coin.coin_module import CoinModule
 
 
-@Module(imports=[], controllers=[AppController], providers=[AppService])
+@Module(imports=[CoinModule], controllers=[AppController], providers=[AppService])
 class AppModule:
     pass
 
@@ -23,9 +24,3 @@ http_server = app.get_server()
 @http_server.on_event("startup")
 async def startup():
     await config.create_all()
-
-
-if __name__ == '__main__':
-    import asyncio
-
-    asyncio.run(config.drop_all())

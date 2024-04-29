@@ -21,6 +21,13 @@ class CoinService:
     
     def __init__(self):
         self.session = config.session
+
+    @async_db_request_handler
+    async def get_coin(self):
+        async with self.session() as session:
+            query = select(CoinEntity)
+            result = await session.execute(query)
+            return result.scalars().all()
         
     @async_db_request_handler
     async def add_coin(self, coin: Coin):
