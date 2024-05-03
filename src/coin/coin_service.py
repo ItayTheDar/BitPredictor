@@ -12,7 +12,7 @@ from nest.core.decorators.database import async_db_request_handler
 from nest.core import Injectable
 from src.config import config
 
-from sqlalchemy import select
+from sqlalchemy import select, text
 from sqlalchemy.ext.asyncio import AsyncSession
 
 
@@ -32,6 +32,9 @@ class CoinService:
     @async_db_request_handler
     async def add_coin(self, coin: Coin):
         async with self.session() as session:
+            coin_exists = await self.get_coin_by_name(coin.name)
+            if coin_exists:
+                return coin_exists.id
             new_coin = CoinEntity(**coin.dict())
             session.add(new_coin)
             await session.commit()
@@ -89,3 +92,24 @@ class CoinService:
             query = select(MarketCapEntity).where(MarketCapEntity.coin_id == coin_id)
             result = await session.execute(query)
         return result.scalars().all()
+
+    @async_db_request_handler
+    async def get_coin_last_update(self, symbol: str):
+        async with self.session() as session:
+            query = (
+                select(PriceHistoryEntity.date)
+                .join(CoinEntity, CoinEntity.id == PriceHistoryEntity.coin_id)
+                .where(CoinEntity.symbol == symbol)
+                .order_by(PriceHistoryEntity.date.desc())
+                .limit(1)
+            )
+            result = await session.execute(query)
+            return result.scalars().first().date()
+
+    @async_db_request_handler
+    async def perform_query(self, query: str):
+        async with self.session() as session:
+            result = await session.execute(text(query))
+            result_to_return = result.scalars().all()
+            return result_to_return
+

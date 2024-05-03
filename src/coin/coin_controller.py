@@ -59,3 +59,11 @@ class CoinController:
     @Post("/add_market_cap/")
     async def add_market_cap(self, market_cap: MarketCap):
         return await self.service.add_market_cap(market_cap)
+
+    @Get("/get_coin_last_update/{symbol}")
+    async def get_coin_last_update(self, symbol: str):
+        return await self.service.get_coin_last_update(symbol)
+
+    @Get("/perform_query/{query}")
+    async def perform_query(self, query: str):
+        return await self.service.perform_query(query)

@@ -2,7 +2,7 @@ import yfinance as yf
 from src.coin.coin_model import Coin, PriceHistory, MarketCap
 from src.coin.coin_service import CoinService
 from typing import Dict
-from datetime import datetime
+from datetime import datetime, timedelta
 import asyncio
 
 cryptocurrency_dict = {
@@ -36,15 +36,22 @@ async def fetch_and_store_data(symbols: Dict[str, str]):
         print(f"Checking available data for {coin_name}")
 
         # Check the earliest data available
-        try:
-            early_data = yf.download(symbol, period="1d", interval="1d", end="2003-01-01")
-            if not early_data.empty:
-                start_date = early_data.index.min().strftime('%Y-%m-%d')
-            else:
-                start_date = "2014-09-17"  # A common default start date
-        except Exception as e:
-            print(f"Failed to fetch early data for {coin_name}: {e}")
-            start_date = "2014-09-17"  # Fallback if there's an error
+        coin_exists = await service.get_coin_by_name(coin_name)
+        if coin_exists:
+            print(f"Data already exists for {coin_name}")
+            start_date = await service.get_coin_last_update(symbol)
+            if start_date:
+                start_date = (start_date + timedelta(days=1)).strftime('%Y-%m-%d')
+        else:
+            try:
+                early_data = yf.download(symbol, period="1d", interval="1d", end="2003-01-01")
+                if not early_data.empty:
+                    start_date = early_data.index.min().strftime('%Y-%m-%d')
+                else:
+                    start_date = "2014-09-17"  # A common default start date
+            except Exception as e:
+                print(f"Failed to fetch early data for {coin_name}: {e}")
+                start_date = "2014-09-17"  # Fallback if there's an error
 
         print(f"Fetching data from {start_date} for {coin_name}")
         data = yf.download(symbol, start=start_date, interval="1d")
